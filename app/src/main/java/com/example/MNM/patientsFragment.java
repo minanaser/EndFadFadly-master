@@ -29,10 +29,9 @@ public class patientsFragment extends Fragment {
 
     RecyclerView recyclerView;
     AdapterPatients adapterPatients;
-    List<ModelPatient> modelPatientList;
-
+    List<ModelPatient>modelPatientList;
     FirebaseAuth firebaseAuth;
-
+    DatabaseReference databaseReference;
     public patientsFragment() {
         // Required empty public constructor
     }
@@ -43,22 +42,36 @@ public class patientsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        modelPatientList =new ArrayList<>();
         // Inflate the layout for this fragment
          View view = inflater.inflate(R.layout.fragment_patients, container, false);
-
          recyclerView = view.findViewById(R.id.patient_fragment_recyclerView);
          recyclerView.setHasFixedSize(true);
          recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+         adapterPatients = new AdapterPatients(view.getContext(),modelPatientList);
+         recyclerView.setAdapter(adapterPatients);
+         databaseReference = FirebaseDatabase.getInstance().getReference("user");
+         databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                modelPatientList.clear();
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    ModelPatient modelUser = ds.getValue(ModelPatient.class);
+                    modelPatientList.add(modelUser);
+                }
+            }
 
-         modelPatientList = new ArrayList<>();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-         getAllPatient();
-        return view;
+            }
+        });
+         return view;
     }
 
-    private void getAllPatient() {
+  /*  private void getAllPatient() {
         final FirebaseUser fuser = firebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("patients");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -83,5 +96,5 @@ public class patientsFragment extends Fragment {
         });
     }
 
-
+*/
 }
