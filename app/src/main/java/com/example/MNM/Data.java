@@ -1,5 +1,7 @@
 package com.example.MNM;
 
+import android.util.Log;
+
 public class Data {
     String name,uid,gender,speciality,accountType, profileImage;
 

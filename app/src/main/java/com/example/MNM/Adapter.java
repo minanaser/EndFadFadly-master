@@ -47,6 +47,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.HolderData> {
         catch (Exception e){
             holder.profile.setImageResource(R.drawable.ic_person_blue_24dp);
              }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,ChatPatient.class);
+                //  intent.putExtra("hisUid", hisUid);
+                context.startActivity(intent);
+
+            }
+        });
     }
 
     @Override

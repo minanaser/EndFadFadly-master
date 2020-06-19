@@ -16,7 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TransactionActivity"></activity>
+
+        <activity android:name=".TransactionActivity" />
+        <activity android:name=".ChatPatient"
+            android:theme="@style/AppThemeNo"
+            />
         <activity
             android:name=".ChatActivity"
             android:theme="@style/AppThemeNo" />

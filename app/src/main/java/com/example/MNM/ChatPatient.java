@@ -6,16 +6,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,19 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import weka.core.neighboursearch.kdtrees.MedianOfWidestDimension;
-
-public class ChatActivity extends AppCompatActivity {
-
-    //views from xml
+public class ChatPatient extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView;
     ImageView profileIv;
@@ -60,16 +50,14 @@ public class ChatActivity extends AppCompatActivity {
     AdapterChat adapterChat;
 
 
-    String hisUid = patientsFragment.currentID;
+    String hisUid = ShowDoctorsActivity.currenttID;
     String hisImage;
     String uid ;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-
+        setContentView(R.layout.activity_chat_patient);
         Toolbar toolbar =findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("");
@@ -87,8 +75,8 @@ public class ChatActivity extends AppCompatActivity {
 
 
         /* on clicking user from users list we have passed that user's UID using intent
-        *so get that uid here to get the profile picture,name and start vhat with that user
-        */
+         *so get that uid here to get the profile picture,name and start vhat with that user
+         */
         //Intent intent = getIntent();
         //hisUid = intent.getStringExtra("hisUid");
         firebaseAuth = FirebaseAuth.getInstance();
@@ -96,7 +84,7 @@ public class ChatActivity extends AppCompatActivity {
         Log.i("check",hisUid+"right");
         Log.i("checkw",uid+"left");
         firebaseDatabase = FirebaseDatabase.getInstance();
-        userDbRef = firebaseDatabase.getReference("user");
+        userDbRef = firebaseDatabase.getReference("Doctors");
         //seach user to get that user's info
         Query userQuery = userDbRef.orderByChild("uid").equalTo(hisUid);
         // get user picture and name
@@ -107,7 +95,7 @@ public class ChatActivity extends AppCompatActivity {
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     //get data
                     String name = ""+ds.child("name").getValue();
-                   // hisImage =""+ds.child("image").getValue();
+                    // hisImage =""+ds.child("image").getValue();
 
                     //set data
                     nameTv.setText(name);
@@ -131,7 +119,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         //click button to send message
-       sendBtn.setOnClickListener(new View.OnClickListener() {
+        sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //get text from edit text
@@ -139,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
                 //check if text is empty or not
                 if(TextUtils.isEmpty(message)){
                     //text empty
-                    Toast.makeText(ChatActivity.this,"Cannot send the empty message...",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChatPatient.this,"Cannot send the empty message...",Toast.LENGTH_SHORT).show();
                 }
                 else{
                     //text not empty
@@ -148,25 +136,25 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
        readMessages();
-   //     seenMessage();
+        //     seenMessage();
 
 
     }
 
 
     private void seenMessage() {
-        userRefForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        userRefForSeen = FirebaseDatabase.getInstance().getReference("ChatsPatient");
         seenListener = userRefForSeen.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               for(DataSnapshot ds: dataSnapshot.getChildren()){
-                   ModelChat chat = ds.getValue(ModelChat.class);
-                   if(chat.getReceiver().equals(uid)&& chat.getSender().equals(hisUid)){
-                       HashMap<String, Object> hasSeenHashMap = new HashMap<>();
-                       hasSeenHashMap.put("isSeen" ,true);
-                       ds.getRef().updateChildren(hasSeenHashMap);
-                   }
-               }
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    ModelChat chat = ds.getValue(ModelChat.class);
+                    if(chat.getReceiver().equals(uid)&& chat.getSender().equals(hisUid)){
+                        HashMap<String, Object> hasSeenHashMap = new HashMap<>();
+                        hasSeenHashMap.put("isSeen" ,true);
+                        ds.getRef().updateChildren(hasSeenHashMap);
+                    }
+                }
             }
 
             @Override
@@ -177,8 +165,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void readMessages() {
-       // chatList = new ArrayList<>();
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats");
+        // chatList = new ArrayList<>();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("ChatsPatient");
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -189,14 +177,14 @@ public class ChatActivity extends AppCompatActivity {
                     Log.i("error2",hisUid);
                     Log.i("help",chat.getReceiver()+"help??");
                     Log.i("help2",chat+"help??");
-                   if(uid.equals(chat.getReceiver()) && hisUid.equals(chat.getSender())||
-                           uid.equals(chat.getSender()) &&hisUid.equals(chat.getReceiver())){
-                       chatList.add(chat);
+                    if(uid.equals(chat.getReceiver()) && hisUid.equals(chat.getSender())||
+                            uid.equals(chat.getSender()) &&hisUid.equals(chat.getReceiver())){
+                        chatList.add(chat);
 
-                   }
-                    adapterChat = new AdapterChat(ChatActivity.this,chatList,hisImage);
+                    }
+                    adapterChat = new AdapterChat(ChatPatient.this,chatList,hisImage);
                     adapterChat.notifyDataSetChanged();
-                    Log.i("help3",adapterChat.fUser+"");
+
 
                     recyclerView.setAdapter(adapterChat);
 
@@ -223,7 +211,7 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("message", message);
         hashMap.put("timestamp", timestamp);
         hashMap.put("isSeen", false);
-        databaseReference.child("Chats").push().setValue(hashMap);
+        databaseReference.child("ChatsPatient").push().setValue(hashMap);
 
         //reset edittext after sending message
         massageEt.setText("");
@@ -235,10 +223,10 @@ public class ChatActivity extends AppCompatActivity {
         if(user!=null){
             //user is signed in stay here
             //set email of logged in user
-           uid = user.getUid();
+            uid = user.getUid();
         }else {
             //user not signed in ,go to main activity
-           // startActivity(new Intent(this,patientsFragment.class));
+            // startActivity(new Intent(this,patientsFragment.class));
             finish();
         }
     }
@@ -246,12 +234,12 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-     //  userRefForSeen.removeEventListener(seenListener);
+        //  userRefForSeen.removeEventListener(seenListener);
     }
 
     @Override
     protected void onStart() {
-      //  checkUserStatus();
+        //  checkUserStatus();
         super.onStart();
     }
 }

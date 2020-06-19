@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +37,9 @@ public class patientsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-
-
+    static String currentID;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         modelPatientList =new ArrayList<>();
         // Inflate the layout for this fragment
@@ -57,7 +56,10 @@ public class patientsFragment extends Fragment {
                 modelPatientList.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelPatient modelUser = ds.getValue(ModelPatient.class);
+                    String id = ""+ds.child("uid").getValue();
+                    Log.i("test",id+"ss");
                     modelPatientList.add(modelUser);
+                    currentID = id;
                 }
             }
 

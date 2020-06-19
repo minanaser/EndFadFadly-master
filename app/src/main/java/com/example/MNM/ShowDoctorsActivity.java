@@ -39,7 +39,7 @@ public class ShowDoctorsActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
 
     FirebaseAuth firebaseAuth;
-
+    static String currenttID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +129,7 @@ public class ShowDoctorsActivity extends AppCompatActivity {
                             String uid = ""+ds.child("uid").getValue();
                             Log.i("TAG",""+uid);
                             loadWekaResults(uid);
+                            currenttID = uid;
                         }
                     }
 

@@ -2,6 +2,7 @@ package com.example.MNM;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,13 +37,15 @@ public class AdapterPatients extends RecyclerView.Adapter<AdapterPatients.MyHold
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder myholder, int position) {
-        final String hisUID = modelPatientList.get(position).getPaientID();
-        String patientImage = modelPatientList.get(position).getImage();
-        String patientName = modelPatientList.get(position).getName();
-        String patientEmail = modelPatientList.get(position).getEmail();
+        ModelPatient modelPatient = modelPatientList.get(position);
+        final String hisUid = modelPatient.getPaientID();
+        String patientImage = modelPatient.getImage();
+        String patientName = modelPatient.getName();
+        String patientEmail = modelPatient.getEmail();
 
         myholder.mNameTv.setText(patientName);
         myholder.mEmailTv.setText(patientEmail);
+        Log.i("false",hisUid+"ss");
 
         try{
             Picasso.get().load(patientImage)
@@ -54,7 +57,7 @@ public class AdapterPatients extends RecyclerView.Adapter<AdapterPatients.MyHold
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context,ChatActivity.class);
-                intent.putExtra("hisUid", hisUID);
+              //  intent.putExtra("hisUid", hisUid);
                 context.startActivity(intent);
 
             }
